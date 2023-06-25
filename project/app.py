@@ -4,6 +4,7 @@ Streamlit Web App
 import numpy as np
 import pandas as pd
 import streamlit as st
+import pydeck as pdk
 
 
 # load dataset
@@ -38,6 +39,19 @@ st.map(my_data.query("injured_persons >= @injured_people")[["latitude", "longitu
 st.header("How many collisions occur during a given time of day?")
 hour = st.sidebar.slider('Hour to look at', min_value=0, max_value=23)
 my_data = my_data[my_data['date/time'].dt.hour==hour]
+
+st.markdown(f'Vehicle collisions between {hour} and {hour + 1}')
+midpoint = (np.average(my_data['latitude']), np.average(my_data['longitude']))
+
+st.write(pdk.Deck(
+    map_style='mapbox://styles/mapbox/light-v9',
+    initial_view_state={
+        "latitude": midpoint[0],
+        "longitude": midpoint[1],
+        "zoom": 11,
+        "pitch": 50
+    }
+))
 
 
 if st.checkbox('Show Raw Data', value=False):
